@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spot the Difference</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #89CFF0, #A6E3E9, #D6E5FA);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+            max-width: 400px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        #moon-img {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        video {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            display: none;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-container {
+            position: relative;
+            width: 100%;
+            height: 80px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #FFB84C, #FFD93D);
+            color: #333;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            font-weight: bold;
+            position: absolute;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 0px 12px rgba(255, 183, 77, 0.7);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #yes-btn {
+            top: 10px;
+            left: 30px;
+        }
+
+        #no-btn {
+            top: 10px;
+            right: 30px;
+        }
+
+        #message {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff914d;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+
+            video, #moon-img {
+                width: 90%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p id="camera-message">Don't worry, we will not take any photos or videos. Won't do anything which makes you feel uncomfortable.</p>
+        <div id="content" style="display: none; position: relative;">
+            <h1 id="question">Can you spot the difference?</h1>
+            <img id="moon-img" src="your-moon-image.jpg" alt="Moon">
+            <video id="camera" autoplay></video>
+            <br>
+            <div class="btn-container">
+                <button id="yes-btn" onmouseover="moveButton()" ontouchstart="moveButton()">Yes</button>
+                <button id="no-btn" onclick="respond(false)">No</button>
+            </div>
+        </div>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const video = document.getElementById('camera');
+            const cameraMessage = document.getElementById('camera-message');
+            const contentDiv = document.getElementById('content');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    cameraMessage.style.display = 'none';
+                    contentDiv.style.display = 'block';
+                    moonImg.style.display = 'block';
+                    yesBtn.style.display = 'inline-block';
+                    noBtn.style.display = 'inline-block';
+                    contentDiv.classList.add("fade-in");
+                })
+                .catch(err => {
+                    console.error("Camera access denied: ", err);
+                    cameraMessage.innerHTML = "Oops! You denied camera access. Please refresh and allow it.";
+                });
+        };
+
+        function moveButton() {
+            const yesBtn = document.getElementById('yes-btn');
+            const container = document.querySelector('.btn-container');
+            
+            const maxX = container.clientWidth - yesBtn.clientWidth;
+            const maxY = container.clientHeight - yesBtn.clientHeight;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            yesBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        function respond(isYes) {
+            const message = document.getElementById('message');
+            const video = document.getElementById('camera');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const question = document.getElementById('question');
+            const container = document.querySelector('.container');
+
+            video.style.display = 'none';
+            moonImg.style.display = 'none';
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            question.style.display = 'none';
+            container.style.background = "#f8f9fa";
+
+            message.innerHTML = isYes ? "Then can u pls unblock, accept my Insta, Snapchat req? So I can send u more!!" : "Then can u pls unblock, accept my Insta, Snapchat req so I can understand u more!!";
+            message.classList.add("fade-in");
+        }
+    </script>
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spot the Difference</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #89CFF0, #A6E3E9, #D6E5FA);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        #moon-img {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        video {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            display: none;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            background: linear-gradient(45deg, #FFB84C, #FFD93D);
+            color: #333;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: none;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 0px 12px rgba(255, 183, 77, 0.7);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #message {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff914d;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+
+            video, #moon-img {
+                width: 90%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p id="camera-message">Don't worry, we will not take any photos or videos. Won't do anything which makes you feel uncomfortable.</p>
+        <div id="content" style="display: none;">
+            <h1 id="question">Can you spot the difference?</h1>
+            <img id="moon-img" src="your-moon-image.jpg" alt="Moon">
+            <video id="camera" autoplay></video>
+            <br>
+            <button id="yes-btn" onclick="respond(true)">Yes</button>
+            <button id="no-btn" onclick="respond(false)">No</button>
+        </div>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const video = document.getElementById('camera');
+            const cameraMessage = document.getElementById('camera-message');
+            const contentDiv = document.getElementById('content');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    cameraMessage.style.display = 'none';
+                    contentDiv.style.display = 'block';
+                    moonImg.style.display = 'block';
+                    yesBtn.style.display = 'inline-block';
+                    noBtn.style.display = 'inline-block';
+                    contentDiv.classList.add("fade-in");
+                })
+                .catch(err => {
+                    console.error("Camera access denied: ", err);
+                    cameraMessage.innerHTML = "Oops! You denied camera access. Please refresh and allow it.";
+                });
+        };
+
+        function respond(isYes) {
+            const message = document.getElementById('message');
+            const video = document.getElementById('camera');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const question = document.getElementById('question');
+            const container = document.querySelector('.container');
+
+            video.style.display = 'none';
+            moonImg.style.display = 'none';
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            question.style.display = 'none';
+            container.style.background = "#f8f9fa";
+
+            message.innerHTML = isYes ? "Then can u pls unblock, accept my Insta, Snapchat req? So I can send u more!!" : "Then can u pls unblock, accept my Insta, Snapchat req so I can understand u more!!";
+            message.classList.add("fade-in");
+        }
+    </script>
+</body>
+</html> -->
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spot the Difference</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ffd6e0, #ffb3c6, #ff80ab);
+            color: #5e375e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0px 4px 20px rgba(255, 182, 193, 0.5);
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        #moon-img {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(255, 182, 193, 0.8);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        video {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            display: none;
+            box-shadow: 0px 0px 15px rgba(255, 182, 193, 0.8);
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff80ab, #ff4081);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 50px;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: none;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: scale(1.08);
+            box-shadow: 0px 0px 15px rgba(255, 182, 193, 0.8);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #message {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff4081;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+
+            video, #moon-img {
+                width: 90%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p id="camera-message">Don't worry, we won’t take any photos or videos. Just a fun little game! 🎀</p>
+        <div id="content" style="display: none;">
+            <h1 id="question">Can you find the difference between these two images? 🌸</h1>
+            <img id="moon-img" src="your-moon-image.jpg" alt="Moon">
+            <video id="camera" autoplay></video>
+            <br>
+            <button id="yes-btn" onclick="respond(true)">Yes 💖</button>
+            <button id="no-btn" onclick="respond(false)">No 💜</button>
+        </div>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const video = document.getElementById('camera');
+            const cameraMessage = document.getElementById('camera-message');
+            const contentDiv = document.getElementById('content');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    cameraMessage.style.display = 'none';
+                    
+                    contentDiv.style.display = 'block';
+                    moonImg.style.display = 'block';
+                    yesBtn.style.display = 'inline-block';
+                    noBtn.style.display = 'inline-block';
+                })
+                .catch(err => {
+                    console.error("Camera access denied: ", err);
+                    cameraMessage.innerHTML = "It seems you denied camera access. Please refresh and allow it.";
+                });
+        };
+
+        function respond(isYes) {
+            const message = document.getElementById('message');
+            const video = document.getElementById('camera');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const question = document.getElementById('question');
+            const cameraMessage = document.getElementById('camera-message');
+            const container = document.querySelector('.container');
+
+            video.style.display = 'none';
+            moonImg.style.display = 'none';
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            question.style.display = 'none';
+            cameraMessage.style.display = 'none';
+            container.style.background = "rgba(255, 240, 245, 0.9)";
+
+            if (isYes) {
+                message.innerHTML = "Yay! 🎀 Add me on Insta & Snapchat for more fun! ✨";
+            } else {
+                message.innerHTML = "Oh no! 💔 Let’s chat on Insta & Snapchat to understand better! 💬";
+            }
+
+            message.classList.add("fade-in");
+        }
+    </script>
+</body>
+</html> -->
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spot the Difference</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0px 4px 20px rgba(0, 255, 255, 0.5);
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+        }
+
+        #moon-img, video {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.7);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff0099, #ff6600);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: none;
+        }
+
+        button:hover {
+            transform: scale(1.08);
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.7);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #message {
+            font-size: 20px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ffcc00;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.8);
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+
+            video, #moon-img {
+                width: 90%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p id="camera-message">Don't worry, will not take any photos or videos. I am not a person who makes you feel uncomfortable.</p>
+        <div id="content" style="display: none;">
+            <h1 id="question">Can you find the difference between these two images?</h1>
+            <img id="moon-img" src="your-moon-image.jpg" alt="Moon">
+            <video id="camera" autoplay></video>
+            <br>
+            <button id="yes-btn" onclick="respond(true)">Yes</button>
+            <button id="no-btn" onclick="respond(false)">No</button>
+        </div>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const video = document.getElementById('camera');
+            const cameraMessage = document.getElementById('camera-message');
+            const contentDiv = document.getElementById('content');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    cameraMessage.style.display = 'none';
+
+                    contentDiv.style.display = 'block';
+                    moonImg.style.display = 'block';
+                    yesBtn.style.display = 'inline-block';
+                    noBtn.style.display = 'inline-block';
+
+                    contentDiv.classList.add("fade-in");
+                    moonImg.classList.add("fade-in");
+                    yesBtn.classList.add("fade-in");
+                    noBtn.classList.add("fade-in");
+                })
+                .catch(err => {
+                    console.error("Camera access denied: ", err);
+                    cameraMessage.innerHTML = "It seems you denied camera access. Please refresh and allow it.";
+                });
+        };
+
+        function respond(isYes) {
+            const message = document.getElementById('message');
+            const video = document.getElementById('camera');
+            const moonImg = document.getElementById('moon-img');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const question = document.getElementById('question');
+            const container = document.querySelector('.container');
+
+            video.style.display = 'none';
+            moonImg.style.display = 'none';
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            question.style.display = 'none';
+            container.style.background = "rgba(0, 0, 0, 0.7)";
+
+            if (isYes) {
+                message.innerHTML = "Then please unblock, accept my Insta & Snapchat so I can send more!";
+            } else {
+                message.innerHTML = "Then please unblock, accept my Insta & Snapchat so I can understand you more!";
+            }
+
+            message.classList.add("fade-in");
+        }
+    </script>
+</body>
+</html> -->
